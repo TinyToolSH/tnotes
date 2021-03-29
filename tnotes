@@ -1,0 +1,177 @@
+#!/usr/bin/python3
+
+"""
+Copyright (C) 2021 TinyTools
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+
+import os
+import datetime
+import subprocess
+import argparse
+
+YAML = '---\ntitle: "{0}"\nsubtitle: "{1}"\ndate: "{2}"\ntags: {3}\n---'
+
+
+def delete_note(path):
+    to_return = False
+    try:
+        os.remove(path+".md")
+        to_return = True
+    except Exception as exception:
+        print(exception)
+
+    return to_return
+
+
+def rename_note(path, name, new_name):
+    to_return = False
+
+    try:
+        os.rename(
+            os.path.join(path, name),
+            os.path.join(path, new_name)+".md"
+        )
+        to_return = True
+    except Exception as exception:
+        print(exception)
+
+    return to_return
+
+
+def get_file_path(path, filename):
+    try:
+        for root, dirs, files in os.walk(os.path.join(path), topdown=False):
+            for name in files:
+                if os.path.join(path, filename) == os.path.join(root, name):
+                    print(os.path.join(root, name))
+
+    except Exception as identifier:
+        print(identifier)
+
+
+def list_notes(path):
+    notes = list()
+
+    for root, dirs, files in os.walk(path, topdown=False):
+        for name in files:
+            notes.append(os.path.join(root, name).replace(path+'/', ''))
+
+    return notes
+
+
+def list_notes_dirs(path):
+    notes_dirs = list()
+
+    for root, dirs, files in os.walk(path, topdown=False):
+        for name in dirs:
+            notes_dirs.append(os.path.join(root, name).replace(path+'/', ''))
+
+    return notes_dirs
+
+
+def add_note(path, title_name, subtitle=str(), tags=list()):
+    subtitle = subtitle if subtitle != None else ''
+    tags = tags if tags != None else []
+    file_path = str()
+
+    filename = os.path.basename(os.path.join(path, title_name))
+    path = os.path.dirname(os.path.join(path, title_name))
+
+    if not os.path.isdir(path):
+        os.makedirs(path)
+
+    file_path = os.path.join(path, filename+".md")
+
+    with open(file_path, 'w') as note:
+        note.write(
+            YAML.format(
+                filename,
+                subtitle,
+                datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), tags)
+        )
+    print("{} added!".format(file_path))
+    return file_path
+
+
+def cli_show_notes(path):
+    notes = list_notes(path)
+
+    for note in notes:
+        print(note)
+
+
+def cli_delete_notes(path):
+    if delete_note(path):
+        print("{} deleted!".format(path))
+    else:
+        print("Error during process!")
+
+
+def cli_rename_note(path, name, new_name):
+    if rename_note(path, name, new_name):
+        print("{} renamed to {}.".format(os.path.basename(path), new_name))
+    else:
+        print("Error during process!")
+
+
+def cli_arguments():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-a', '--add', required=False, help='Add note')
+    parser.add_argument('-s', '--sub', required=False,
+                        help='Add subtitle to note')
+    parser.add_argument('-t', '--tags', required=False,
+                        help='Add tags to note')
+    parser.add_argument('-l', '--list', action='store_true',
+                        default=False, required=False)
+    parser.add_argument('-p', '--path', help='Inform path to notes folder', required=False,
+                        default=os.path.join(os.getenv('HOME'), 'Notes')
+                        )
+    parser.add_argument('-d', '--delete', required=False, help='Remove note')
+    parser.add_argument('-r', '--rename', nargs='+',
+                        required=False, help='Rename note')
+    parser.add_argument('-fp', '--filepath',
+                        required=False, help='Get file path')
+
+    return parser
+
+
+def main():
+    parser = cli_arguments()
+    args = parser.parse_args()
+    PATH = os.path.join(os.getenv('HOME'), 'Notes')
+
+    if args.path:
+        PATH = os.path.join(args.path)
+
+    if args.list:
+        cli_show_notes(PATH)
+    elif args.add:
+        add_note(PATH, args.add, args.sub, args.tags)
+    elif args.delete:
+        cli_delete_notes(os.path.join(PATH, args.delete))
+    elif args.rename:
+        cli_rename_note(PATH, args.rename[0], args.rename[1])
+    elif args.filepath:
+        get_file_path(PATH, args.filepath)
+    else:
+        parser.print_help()
+        parser.exit()
+
+
+if __name__ == "__main__":
+    main()
