@@ -28,91 +28,34 @@ sudo make uninstall
 
 We can do that you by using the options listed bellow:
 
-* `-a`, `--add`, `add` `<path>`: add a note to the path informed, it creates a folder if it does not exists;
+* `-n`, `--new`, `new` `<path>`: create a new note to the path informed, it creates a folder if it does not exists;
+    *  `-t`, `--title`, `title` `<title>`: add title to note metadata;
+    *  `-s`, `--subtitle`, `subtitle` `<subtitle>`: add subtitle to note metadata;
+    *  `--tags`, `tags` `<tags>` add tags to note metadata;
+* `-l`, `--list`, `list` `<path>`: list notes on a given path;
+* `-o`, `--open`, `open` `<path>`: open note from a given path;
 
----
-* `-p`, `--path`: informs the path where the notes will be (or are) being stored;
-* `-a`, `--add` `<name>`: adds a new note with the title received as argument on the path informed with `--path`;
-* `-s`, `--sub` `<subname>`: adds a subtitle received as argument in the note metadata of the note;
-* `-t`, `--tags` `<tags>`: adds tags to the note metadata of the note;
-* `-l`, `--list`: lists the notes in stored in the path informed with `--path`;
+* Not implemented yet:
+
 * `-r`, `--rename` `<name>` `<new name>`: rename note file withe the name informed as argument;
 * `-d`, `--delete` `<name>`: deletes a note with the title received as argument on the path informed with `--path`;
----
 
 ### Examples:
 
 ```bash
-$ tnotes -t "Test Note Title" -s "Subtitle note" --tags "test,markdown"
-```
-Create a note on a default path (~/tnotes). This note will have the title as its filename.
-
-User can change the path by changing the `$TNOTES_PATH` global variable.
-
-```bash
-$ tnotes -t "Test Note Title" -s "Subtitle note" --tags "test,markdown"
+$ tnotes --new test.md --title="Test Note Title" --subtitle="Subtitle note" --tags="test,markdown"
 ```
 
+Create a note named `test.md`. This note will have the follow metadata:
+
+```yml
+---
+title: "Test Note Title"
+subtitle: "Subtitle note"
+date: "2021-02-11 15:17:32"
+tags: ["test", "markdown"]
 
 ---
-
-In these examples we are assuming that your notes dir is `~/notes/`.
-
-* To `add` a note without metadata:
-
-```bash
-$ tnotes --add "~/notes/test folder/test note.md"
-```
-
-It'll then create a `test folder` inside `~/notes/` folder.
-After thar it will create a note named `test note.md` with `# test note` as content.
-
-* To `add` a note with metadata:
-
-```bash
-$ tnotes --add "~/notes/test folder/test note.md"
-```
-
-
-
-```bash
-$ tnotes --path ~/notes/ --add "Test Note" --sub "This is a Test" --tags "test, note, markdown"
-~/notes/Test Note.md added!
-```
-
-Afther this you can add your content by editing the note with your favorite text editor.
-
-* To `list` the notes:
-
-```bash
-$ tnotes --path ~/notes/ --list
-Test Note.md
-```
-
-In this example the note metadata will be:
-
-```bash
-$ cat ~/notes/Test\ Note.md
----
-title: "Test Note"
-subtitle: "This is a Test"
-date: "2021-03-18 23:10:21"
-tags: test, note, markdown
----
-```
-
-* To `rename` a note:
-
-```bash
-$ tnotes --path notes/ --rename "Test Note.md" "New Note"
- renamed to New Note.
-```
-
-* To `delete` a note:
-
-```bash
-$ tnotes --path notes/ --delete "New Note"
-notes/New Note deleted!
 ```
 
 And that's it!
