@@ -13,20 +13,35 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-note_metadata="---\ntitle: %s\nsubtitle: %s\ndate: %s\ntags: [%s]\n\n---"
+note_metadata="title: %s\nsubtitle: %s\ndate: %s\ntags: [%s]\n\n"
+title=""
+subtitle=""
+tags=""
 note=""
 action=""
+verbose=0
 
 create_note()
 {
-    echo "creating note..."
+    [ $verbose = 1 ] && echo "creating note..."
     path=$(dirname $note)
     note_name=$(basename $note)
-    [ -f "$note" ] && echo "note already exists!" && exit 1
-    [ -d "$path" ] || mkdir "$path"
-    echo "# $note_name" > "$note"
+    note_name_md=${note_name%.*}.md
 
-    echo "$note_name created!"
+    [ -f "$note_name_md" ] && [ $verbose = 1 ] && echo "note already exists!" && exit 1
+    [ -d "$path" ] || mkdir "$path"
+
+    echo "---" > "$path/$note_name_md"
+    printf "$note_metadata" "$title" "$subtitle" "$(date +"%F %H:%M:%S")" "$tags" >> "$path/$note_name_md"
+    echo "---" >> "$path/$note_name_md"
+
+    if [ ! -z "$title" ]; then
+        echo -e "\n# $title" >> "$path/$note_name_md"
+    else
+        echo -e "\n# $note_name" >> "$path/$note_name_md"
+    fi
+
+    [ $verbose = 1 ] && echo "$note_name_md created!"
 }
 
 usage()
@@ -62,6 +77,24 @@ parse_arguments()
                     tags="${1#*=}"
                 fi
                 shift ;;
+            -t | --title | title )
+                if [ ! -z "$2" ]; then
+                    title="$2"
+                    shift; # Shift value
+                fi
+                shift ;;
+            -s | --subtitle | subtitle )
+                if [ ! -z "$2" ]; then
+                    subtitle="$2"
+                    shift; # Shift value
+                fi
+                shift ;;
+            --tags | tags )
+                if [ ! -z "$2" ]; then
+                    tags="$2"
+                    shift; # Shift value
+                fi
+                shift ;;
             -l | --list | list)
                 if [ -z "$2" ]; then
                     echo "Listing..."
@@ -76,6 +109,9 @@ parse_arguments()
                 fi
                 shift;;
             -h | --help | help) usage; shift ;;
+            -v | --verbose)
+                verbose=1
+                shift;;
             -*)
                 echo "unknown option: $1" >&2; exit 1;;
             *) PARAMS="$PARAMS $1"; shift ;;
@@ -85,16 +121,22 @@ parse_arguments()
 
 arguments="$@"
 [ -z "$arguments" ] && usage || parse_arguments "$@"
-echo "Nome do arquivo: $note"
-echo "Título: $title"
-echo "Subtítulo: $subtitle"
-echo "Data: $(date +"%F %H:%M:%S")"
-echo "Tags: $tags"
+
+if [ $verbose = 1 ]; then
+    echo "Nome do arquivo: $note"
+    echo "Título: $title"
+    echo "Subtítulo: $subtitle"
+    echo "Data: $(date +"%F %H:%M:%S")"
+    echo "Tags: $tags"
+fi
 
 if [ -z "$note" ]; then
-    echo "deve informar um path"
-elif [ -f "$note" ]; then
-    echo "nota já existe"
+    [ $verbose = 1 ] && echo "deve informar um path"
+    exit 1
+elif [ -f "${note%.*}.md" ]; then
+    [ $verbose = 1 ] && echo "nota já existe"
+    exit 1
 else
-    echo "cria nota"
+    create_note
+    exit 0
 fi
