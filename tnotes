@@ -16,7 +16,6 @@
 note_metadata="---\ntitle: %s\nsubtitle: %s\ndate: %s\ntags: [%s]\n\n---"
 note=""
 action=""
-metadata=0
 
 create_note()
 {
@@ -39,13 +38,43 @@ usage()
 parse_arguments()
 {
     # https://stackoverflow.com/a/31443098
+    # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash#13359121
     while [ "$#" -gt 0 ]; do
         case "$1" in
-            -c | --create | create ) [ ! -z "$2" ] && [ -z "$note" ] && note="$2"; shift ;;
-            --subtitle=* | subtitle=* ) subtitle="${1#*=}"; shift ;;
-            --tags=* | tags=* )  tags="${1#*=}"; shift ;;
-            --title=* | title=* ) title="${1#*=}"; shift ;;
-            -m | --metadata | metadata) [ ! -z "$2" ] && metadata=1; shift ;;
+            -n | --new | new )
+                if [ ! -z "$2" ]; then
+                    [ -z "$note" ] && note="$2";
+                    shift; # Shift value
+                fi
+                shift ;; # Shift argument
+            -t=* | --title=* | title=* )
+                if [ ! -z "${1#*=}" ]; then
+                    title="${1#*=}"
+                fi
+                shift ;;
+            -s=* | --subtitle=* | subtitle=* )
+                if [ ! -z "${1#*=}" ]; then
+                    subtitle="${1#*=}"
+                fi
+                shift ;;
+            --tags=* | tags=* )
+                if [ ! -z "${1#*=}" ]; then
+                    tags="${1#*=}"
+                fi
+                shift ;;
+            -l | --list | list)
+                if [ -z "$2" ]; then
+                    echo "Listing..."
+                    exit -1
+                fi
+                find "$2" -name "*.md" -o -name "*.txt"
+                shift;;
+            -o | --open | open)
+                if [ ! -z "$2" ]; then
+                    xdg-open "$2"
+                    exit 0
+                fi
+                shift;;
             -h | --help | help) usage; shift ;;
             -*)
                 echo "unknown option: $1" >&2; exit 1;;
@@ -56,11 +85,12 @@ parse_arguments()
 
 arguments="$@"
 [ -z "$arguments" ] && usage || parse_arguments "$@"
-echo $note
-echo $metadata
-echo $subtitle
-echo $tags
-echo $title
+echo "Nome do arquivo: $note"
+echo "Título: $title"
+echo "Subtítulo: $subtitle"
+echo "Data: $(date +"%F %H:%M:%S")"
+echo "Tags: $tags"
+
 if [ -z "$note" ]; then
     echo "deve informar um path"
 elif [ -f "$note" ]; then
