@@ -22,7 +22,8 @@
 ####################################################################################################
 DMENU_ITEMS="/tmp/dmenu_items"
 DMENU_ARGS=$@
-PYNOTES=tnotes
+TNOTES_PATH="/tmp/tnotes"
+TNOTES=tnotes
 
 ###################################################################################################
 # add_note function
@@ -31,8 +32,9 @@ PYNOTES=tnotes
 add_note()
 {
   if [ "$@" ] && [ "$@" != "[add]" ]; then
-    $PYNOTES -a "$@"
-    xdg-open "$($PYNOTES -fp "$@.md")"
+    note="$@"
+    $TNOTES -n "$TNOTES_PATH/$@"
+    xdg-open "$TNOTES_PATH/${note%.*}.md"
   fi
 }
 
@@ -43,7 +45,8 @@ add_note()
 rename_note()
 {
     new_note=$(echo -e "" | dmenu -p "Rename" $DMENU_ARGS)
-    $PYNOTES -r "$@" "$new_note"
+    echo "moving $@ to $new_note"
+    $TNOTES --mv "$TNOTES_PATH/$@" "$TNOTES_PATH/${new_note%.*}.md"
     show_notes 
 }
 
@@ -53,8 +56,7 @@ rename_note()
 ###################################################################################################
 remove_note()
 {
-    rm "$($PYNOTES -fp "$@")"
-    
+    $TNOTES --rm "$TNOTES_PATH/$@"
     show_notes 
 }
 
@@ -68,7 +70,7 @@ note_selection()
     chosen="$@"
     action=$(echo -e "[open]\n[rename]\n[delete]\n[back]" | dmenu -p "$chosen" $DMENU_ARGS)
     case $action in
-        *"[open]"*)         xdg-open "$($PYNOTES -fp "$chosen")";;
+        *"[open]"*)         xdg-open "$TNOTES_PATH/$chosen";;
         *"[rename]"*)       rename_note "$chosen" ;;
         *"[delete]"*)       remove_note "$chosen" ;;
         *"[back]"*)         show_notes ;;
@@ -85,7 +87,8 @@ show_notes()
 
   echo -e $actions > $DMENU_ITEMS
 
-  $PYNOTES -l >> $DMENU_ITEMS
+  $TNOTES -l $TNOTES_PATH >> $DMENU_ITEMS
+  sed -i "s|$TNOTES_PATH/||g" $DMENU_ITEMS
 
   chosen=$(cat $DMENU_ITEMS | dmenu -p "Notes" $DMENU_ARGS)
   
