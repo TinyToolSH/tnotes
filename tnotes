@@ -118,11 +118,26 @@ parse_arguments()
                     exit -1
                 fi
                 find "$2" -name "*.md" -o -name "*.txt"
+                exit 0
                 shift
                 ;;
             -o | --open | open)
                 if [ ! -z "$2" ]; then
                     xdg-open "$2"
+                    exit 0
+                fi
+                shift
+                ;;
+            -r | --rm | rm)
+                if [ ! -z "$2" ]; then
+                    rm "$2"
+                    exit 0
+                fi
+                shift
+                ;;
+            -m | --mv | mv)
+                if [ ! -z "$2" ]; then
+                    mv "$2" "$3"
                     exit 0
                 fi
                 shift
