@@ -19,16 +19,13 @@ subtitle=""
 tags=""
 note=""
 action=""
-verbose=0
 
 create_note()
 {
-    [ $verbose = 1 ] && echo "creating note..."
     path=$(dirname $note)
     note_name=$(basename $note)
     note_name_md=${note_name%.*}.md
 
-    [ -f "$note_name_md" ] && [ $verbose = 1 ] && echo "note already exists!" && exit 1
     [ -z "$title" ] && title=$note_name
     [ -d "$path" ] || mkdir "$path"
 
@@ -42,7 +39,7 @@ create_note()
         echo -e "\n# $note_name" >> "$path/$note_name_md"
     fi
 
-    [ $verbose = 1 ] && echo "$note_name_md created!"
+    echo "$note_name_md created!"
 }
 
 usage()
@@ -57,7 +54,7 @@ parse_new_note_argument()
         note="$1"
         shift;
     else
-        echo "\"--new\" options expects an argument."
+        echo "\"--new\" option expects an argument."
         exit 1
     fi
 }
@@ -147,10 +144,6 @@ parse_arguments()
                 usage;
                 shift
                 ;;
-            -v | --verbose)
-                verbose=1
-                shift
-                ;;
             -*)
                 echo "unknown option: $1" >&2;
                 exit 1
@@ -166,19 +159,8 @@ parse_arguments()
 arguments="$@"
 [ -z "$arguments" ] && usage || parse_arguments "$@"
 
-if [ $verbose = 1 ]; then
-    echo "Nome do arquivo: $note"
-    echo "Título: $title"
-    echo "Subtítulo: $subtitle"
-    echo "Data: $(date +"%F %H:%M:%S")"
-    echo "Tags: $tags"
-fi
-
-if [ -z "$note" ]; then
-    [ $verbose = 1 ] && echo "deve informar um path"
-    exit 1
-elif [ -f "${note%.*}.md" ]; then
-    [ $verbose = 1 ] && echo "nota já existe"
+if [ -f "${note%.*}.md" ]; then
+    echo "\"${note%.*}.md\" already exists!"
     exit 1
 else
     create_note
