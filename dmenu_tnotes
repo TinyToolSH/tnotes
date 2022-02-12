@@ -87,7 +87,7 @@ show_notes()
   echo -e $actions > $DMENU_ITEMS
 
   $TNOTES -l $TNOTES_PATH >> $DMENU_ITEMS
-  sed -i "s|$TNOTES_PATH/||g" $DMENU_ITEMS
+  sed -i "s|$TNOTES_PATH||g" $DMENU_ITEMS
 
   chosen=$(cat $DMENU_ITEMS | dmenu -p "Notes" $DMENU_ARGS)
   
