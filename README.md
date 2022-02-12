@@ -34,11 +34,8 @@ We can do that you by using the options listed bellow:
     *  `--tags`, `tags` `<tags>` add tags to note metadata;
 * `-l`, `--list`, `list` `<path>`: list notes on a given path;
 * `-o`, `--open`, `open` `<path>`: open note from a given path;
-
-* Not implemented yet:
-
-* `-r`, `--rename` `<name>` `<new name>`: rename note file withe the name informed as argument;
-* `-d`, `--delete` `<name>`: deletes a note with the title received as argument on the path informed with `--path`;
+* `-m`, `--mv`, `mv` `<name>` `<new name>`: rename note file withe the name informed as argument;
+* `-r`, `--rm` `rm` `<name>`: deletes a note with the title received as argument on the path informed with `--path`;
 
 ### Examples:
 

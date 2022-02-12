@@ -44,7 +44,17 @@ create_note()
 
 usage()
 {
-    echo "usage:"
+    echo "usage: tnotes {OPTIONS}"
+    echo "e.g: tnotes --new ~/Notes/example"
+    echo "options:"
+    echo "'-n', '--new', 'new' '<path>': create a new note to the path informed, it creates a folder if it does not exists;"
+    echo "'-t', '--title', 'title' '<title>': add title to note metadata;"
+    echo "'-s', '--subtitle', 'subtitle' '<subtitle>': add subtitle to note metadata;"
+    echo "'--tags', 'tags' '<tags>' add tags to note metadata;"
+    echo "'-l', '--list', 'list' '<path>': list notes on a given path;"
+    echo "'-o', '--open', 'open' '<path>': open note from a given path;"
+    echo "'-m', '--mv', 'mv' '<name>' '<new name>': rename note file withe the name informed as argument;"
+    echo "'-r', '--rm' 'rm' '<name>': deletes a note with the title received as argument on the path informed with '--path';"
     exit 0
 }
 
