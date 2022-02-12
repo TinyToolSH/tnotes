@@ -50,6 +50,32 @@ usage()
     exit 0
 }
 
+parse_new_note_argument()
+{
+    if [ ! -z "$1" ]; then
+        note="$1"
+        shift;
+    else
+        echo "\"--new\" options expects an argument."
+        exit 1
+    fi
+}
+
+parse_title_argument()
+{
+    [ ! -z "$1" ] && title="$1";
+}
+
+parse_subtitle_argument()
+{
+    [ ! -z "$1" ] && subtitle="$1"
+}
+
+parse_tags_argument()
+{
+    [ ! -z "$1" ] && tags="$1"
+}
+
 parse_arguments()
 {
     # https://stackoverflow.com/a/31443098
@@ -57,64 +83,66 @@ parse_arguments()
     while [ "$#" -gt 0 ]; do
         case "$1" in
             -n | --new | new )
-                if [ ! -z "$2" ]; then
-                    [ -z "$note" ] && note="$2";
-                    shift; # Shift value
-                fi
-                shift ;; # Shift argument
+                parse_new_note_argument "$2";
+                shift
+                ;;
             -t=* | --title=* | title=* )
-                if [ ! -z "${1#*=}" ]; then
-                    title="${1#*=}"
-                fi
-                shift ;;
+                parse_title_argument "${1#*=}"
+                shift
+                ;;
             -s=* | --subtitle=* | subtitle=* )
-                if [ ! -z "${1#*=}" ]; then
-                    subtitle="${1#*=}"
-                fi
-                shift ;;
+                parse_subtitle_argument "${1#*=}"
+                shift
+                ;;
             --tags=* | tags=* )
-                if [ ! -z "${1#*=}" ]; then
-                    tags="${1#*=}"
-                fi
-                shift ;;
+                parse_tags_argument "${1#*=}"
+                shift
+                ;;
             -t | --title | title )
-                if [ ! -z "$2" ]; then
-                    title="$2"
-                    shift; # Shift value
-                fi
-                shift ;;
+                parse_title_argument "$2"
+                shift
+                shift
+                ;;
             -s | --subtitle | subtitle )
-                if [ ! -z "$2" ]; then
-                    subtitle="$2"
-                    shift; # Shift value
-                fi
-                shift ;;
+                parse_title_argument "$2"
+                shift
+                shift
+                ;;
             --tags | tags )
-                if [ ! -z "$2" ]; then
-                    tags="$2"
-                    shift; # Shift value
-                fi
-                shift ;;
+                parse_tags_argument "$2"
+                shift
+                shift
+                ;;
             -l | --list | list)
                 if [ -z "$2" ]; then
-                    echo "Listing..."
                     exit -1
                 fi
                 find "$2" -name "*.md" -o -name "*.txt"
-                shift;;
+                shift
+                ;;
             -o | --open | open)
                 if [ ! -z "$2" ]; then
                     xdg-open "$2"
                     exit 0
                 fi
-                shift;;
-            -h | --help | help) usage; shift ;;
+                shift
+                ;;
+            -h | --help | help)
+                usage;
+                shift
+                ;;
             -v | --verbose)
                 verbose=1
-                shift;;
+                shift
+                ;;
             -*)
-                echo "unknown option: $1" >&2; exit 1;;
-            *) PARAMS="$PARAMS $1"; shift ;;
+                echo "unknown option: $1" >&2;
+                exit 1
+                ;;
+            *)
+                PARAMS="$PARAMS $1";
+                shift
+                ;;
         esac
     done
 }
