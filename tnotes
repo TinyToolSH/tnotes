@@ -13,7 +13,7 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-note_metadata="title: %s\nsubtitle: %s\ndate: %s\ntags: [%s]\n\n"
+note_metadata="title: \"%s\"\nsubtitle: \"%s\"\ndate: \"%s\"\ntags: [%s]\n\n"
 title=""
 subtitle=""
 tags=""
@@ -29,6 +29,7 @@ create_note()
     note_name_md=${note_name%.*}.md
 
     [ -f "$note_name_md" ] && [ $verbose = 1 ] && echo "note already exists!" && exit 1
+    [ -z "$title" ] && title=$note_name
     [ -d "$path" ] || mkdir "$path"
 
     echo "---" > "$path/$note_name_md"
