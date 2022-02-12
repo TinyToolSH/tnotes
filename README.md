@@ -57,6 +57,21 @@ tags: ["test", "markdown"]
 
 And that's it!
 
+## tnotes+dmenu
+
+We scripts supports `dmenu` as an interface, so you can list, add, rename and delete your notes quickly running a single command:
+
+```sh
+$ dmenu_tnotes
+```
+
+You can inform `dmenu_tnotes` where your notes is stored so you can manage them.
+Let's say you store your notes on `~/notes/`, you can export a environment variable called `TNOTES_PATH` and call `dmenu_tnotes`:
+
+```sh
+$ export TNOTES_PATH=~/notes/; dmenu_tnotes
+```
+
 # Team
 
 | <img src="https://github.com/Calebe94.png?size=200" alt="Edimar Calebe Castanho"> | <img src="https://github.com/gbgabo.png?size=200" alt="Gabriel Gaboardi"> | 
