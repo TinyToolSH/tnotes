@@ -22,11 +22,11 @@ action=""
 
 create_note()
 {
-    path=$(dirname $note)
-    note_name=$(basename $note)
+    path=$(dirname "$note")
+    note_name=$(basename "$note")
     note_name_md=${note_name%.*}.md
 
-    [ -z "$title" ] && title=$note_name
+    [ -z "$title" ] && title="$note_name"
     [ -d "$path" ] || mkdir "$path"
 
     echo "---" > "$path/$note_name_md"
