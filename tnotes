@@ -112,7 +112,7 @@ parse_arguments()
                 shift
                 ;;
             -s | --subtitle | subtitle )
-                parse_title_argument "$2"
+                parse_subtitle_argument "$2"
                 shift
                 shift
                 ;;
