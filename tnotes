@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #Copyright (C) 2021 TinyTools
 
 #This program is free software: you can redistribute it and/or modify
@@ -34,9 +34,9 @@ create_note()
     echo "---" >> "$path/$note_name_md"
 
     if [ ! -z "$title" ]; then
-        echo -e "\n# $title" >> "$path/$note_name_md"
+        echo "\n# $title" >> "$path/$note_name_md"
     else
-        echo -e "\n# $note_name" >> "$path/$note_name_md"
+        echo "\n# $note_name" >> "$path/$note_name_md"
     fi
 
     echo "$note_name_md created!"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #This file is part of the TinyTools distribution (https://github.com/Calebe94/TinyTools).
 #Copyright (C) 2021 TinyTools
@@ -22,7 +22,7 @@
 ####################################################################################################
 DMENU_ITEMS="/tmp/dmenu_items"
 DMENU_ARGS=$@
-TNOTES=tnotes
+TNOTES=$(pwd)/tnotes
 
 ###################################################################################################
 # add_note function
@@ -43,7 +43,7 @@ add_note()
 ###################################################################################################
 rename_note()
 {
-    new_note=$(echo -e "" | dmenu -p "Rename" $DMENU_ARGS)
+    new_note=$(echo "" | dmenu -p "Rename" $DMENU_ARGS)
     echo "moving $@ to $new_note"
     $TNOTES --mv "$TNOTES_PATH/$@" "$TNOTES_PATH/${new_note%.*}.md"
     show_notes 
@@ -67,7 +67,7 @@ remove_note()
 note_selection()
 {
     chosen="$@"
-    action=$(echo -e "[open]\n[rename]\n[delete]\n[back]" | dmenu -p "$chosen" $DMENU_ARGS)
+    action=$(echo "[open]\n[rename]\n[delete]\n[back]" | dmenu -p "$chosen" $DMENU_ARGS)
     case $action in
         *"[open]"*)         xdg-open "$TNOTES_PATH/$chosen";;
         *"[rename]"*)       rename_note "$chosen" ;;
@@ -84,7 +84,7 @@ show_notes()
 {
   actions="[add]"
 
-  echo -e $actions > $DMENU_ITEMS
+  echo $actions > $DMENU_ITEMS
 
   $TNOTES -l $TNOTES_PATH >> $DMENU_ITEMS
   sed -i "s|$TNOTES_PATH||g" $DMENU_ITEMS
@@ -94,7 +94,7 @@ show_notes()
   if grep -Fxq "$chosen" $DMENU_ITEMS
   then 
     case "$chosen" in
-      *"[add]"*)    todo=$(echo -e "" | dmenu -p "Add:" $DMENU_ARGS) ;  add_note "$chosen"; show_notes ;;
+      *"[add]"*)    todo=$(echo "" | dmenu -p "Add:" $DMENU_ARGS) ;  add_note "$chosen"; show_notes ;;
       *)            note_selection "$chosen";;
     esac
   else
