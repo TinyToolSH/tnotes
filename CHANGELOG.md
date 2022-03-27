@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+### Changed
+
+### Removed
+
+## [0.2.0]
+
+### Added
+
 * Added verbose e new arguments;
 * Added functions to parse arguments;
 * Added rm and mv function;
@@ -55,4 +65,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 [unreleased]: https://github.com/TinyToolSH/tnotes/compare/0.1.0...HEAD
+[0.2.0]: https://github.com/TinyToolSH/tnotes/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/TinyToolSH/tnotes/releases/tag/0.1.0
