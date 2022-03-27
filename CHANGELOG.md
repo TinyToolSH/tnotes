@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `pynotes` script;
 * Added `dmenu_pynotes` script;
 * Added licence to `tnotes` script;
+* Added templates to repository;
 
 ### Fixed
 
