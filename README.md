@@ -1,10 +1,6 @@
 # tnotes
 
-A simple script to create and access [Markdown](https://www.markdownguide.org/) notes easily.
-
-## Dependencies
-
-* [python3](https://www.python.org/)
+A simple tool to create and manage your [Markdown](https://www.markdownguide.org/) notes easily.
 
 ## Installation
 
