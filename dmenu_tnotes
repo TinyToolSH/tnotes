@@ -21,8 +21,10 @@
 # Variables used in the script.
 ####################################################################################################
 DMENU_ITEMS="/tmp/dmenu_items"
-DMENU_ARGS=$@
-TNOTES=$(pwd)/tnotes
+DMENU_ARGS="$*"
+DMENU_CMD="dmenu $DMENU_ARGS"
+[ -z "$DMENU_ARGS" ] && DMENU_CMD="dmenu"
+TNOTES=tnotes
 
 ###################################################################################################
 # add_note function
@@ -30,9 +32,9 @@ TNOTES=$(pwd)/tnotes
 ###################################################################################################
 add_note()
 {
-  if [ "$@" ] && [ "$@" != "[add]" ]; then
-    note="$@"
-    $TNOTES -n "$TNOTES_PATH/$@"
+  if [ "$*" ] && [ "$*" != "[add]" ]; then
+    note="$*"
+    "$TNOTES" -n "$TNOTES_PATH/$*"
     xdg-open "$TNOTES_PATH/${note%.*}.md"
   fi
 }
@@ -43,10 +45,12 @@ add_note()
 ###################################################################################################
 rename_note()
 {
-    new_note=$(echo "" | dmenu -p "Rename" $DMENU_ARGS)
-    echo "moving $@ to $new_note"
-    $TNOTES --mv "$TNOTES_PATH/$@" "$TNOTES_PATH/${new_note%.*}.md"
-    show_notes 
+    new_note=$("$DMENU_CMD" -p "Rename" < /dev/null)
+    if [ -n "$new_note" ]; then
+        echo "moving $* to $new_note"
+        "$TNOTES" --mv "$TNOTES_PATH/$*" "$TNOTES_PATH/${new_note%.*}.md"
+    fi
+    show_notes
 }
 
 ###################################################################################################
@@ -55,7 +59,7 @@ rename_note()
 ###################################################################################################
 remove_note()
 {
-    $TNOTES --rm "$TNOTES_PATH/$@"
+    "$TNOTES" --rm "$TNOTES_PATH/$*"
     show_notes 
 }
 
@@ -66,8 +70,8 @@ remove_note()
 ###################################################################################################
 note_selection()
 {
-    chosen="$@"
-    action=$(echo "[open]\n[rename]\n[delete]\n[back]" | dmenu -p "$chosen" $DMENU_ARGS)
+    chosen="$*"
+    action=$(printf "[open]\n[rename]\n[delete]\n[back]" | "$DMENU_CMD" -p "$chosen")
     case $action in
         *"[open]"*)         xdg-open "$TNOTES_PATH/$chosen";;
         *"[rename]"*)       rename_note "$chosen" ;;
@@ -84,17 +88,17 @@ show_notes()
 {
   actions="[add]"
 
-  echo $actions > $DMENU_ITEMS
+  printf "%s\n" "$actions" > "$DMENU_ITEMS"
 
-  $TNOTES -l $TNOTES_PATH >> $DMENU_ITEMS
-  sed -i "s|$TNOTES_PATH||g" $DMENU_ITEMS
+  $TNOTES -l "$TNOTES_PATH" >> "$DMENU_ITEMS"
+  sed -i "s|$TNOTES_PATH||g" "$DMENU_ITEMS"
 
-  chosen=$(cat $DMENU_ITEMS | dmenu -p "Notes" $DMENU_ARGS)
+  chosen=$("$DMENU_CMD" -p "Notes" < "$DMENU_ITEMS")
   
   if grep -Fxq "$chosen" $DMENU_ITEMS
   then 
     case "$chosen" in
-      *"[add]"*)    todo=$(echo "" | dmenu -p "Add:" $DMENU_ARGS) ;  add_note "$chosen"; show_notes ;;
+      *"[add]"*)    note=$("$DMENU_CMD" -p "Add:" < /dev/null) ;  add_note "$note"; ;;
       *)            note_selection "$chosen";;
     esac
   else
