@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Changed `tnotes` and `dmenu_tnotes` to be POSIX compliant;
+* Updated usage message on both `tnotes` and `README.md`, removing unnecessary arguments;
+
 ### Removed
 
 ## [0.2.0]
