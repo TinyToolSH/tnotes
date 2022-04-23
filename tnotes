@@ -46,14 +46,14 @@ usage()
     echo "usage: tnotes {OPTIONS}"
     echo "e.g: tnotes --new ~/Notes/example"
     echo "options:"
-    echo "'-n', '--new', 'new' '<path>': create a new note to the path informed, it creates a folder if it does not exists;"
-    echo "'-t', '--title', 'title' '<title>': add title to note metadata;"
-    echo "'-s', '--subtitle', 'subtitle' '<subtitle>': add subtitle to note metadata;"
-    echo "'--tags', 'tags' '<tags>' add tags to note metadata;"
-    echo "'-l', '--list', 'list' '<path>': list notes on a given path;"
-    echo "'-o', '--open', 'open' '<path>': open note from a given path;"
-    echo "'-m', '--mv', 'mv' '<name>' '<new name>': rename note file withe the name informed as argument;"
-    echo "'-r', '--rm' 'rm' '<name>': deletes a note with the title received as argument on the path informed with '--path';"
+    echo "'-n', '--new' '<path>': create a new note to the path informed, it creates a folder if it does not exists;"
+    echo "'-t', '--title' '<title>': add title to note metadata;"
+    echo "'-s', '--subtitle' '<subtitle>': add subtitle to note metadata;"
+    echo "'--tags' '<tags>' add tags to note metadata;"
+    echo "'-l', '--list' '<path>': list notes on a given path;"
+    echo "'-o', '--open' '<path>': open note from a given path;"
+    echo "'-m', '--mv' '<name>' '<new name>': rename note file withe the name informed as argument;"
+    echo "'-r', '--rm' '<name>': deletes a note with the title received as argument on the path informed with '--path';"
     exit 0
 }
 
@@ -97,7 +97,7 @@ if [ -z "$arguments" ]; then
     usage
 else
     progname="$(basename "$0")"
-    OPTS=$(getopt -o "hn:t:s:l:o:m:r:" --long "help,new:,title:,subtitle:,list:,open:,move:,remove:" -n "$progname" -- "$@")
+    OPTS=$(getopt -o "hn:t:s:l:o:m:r:" --long "help,new:,title:,subtitle:,list:,open:,move:,remove:,tags:" -n "$progname" -- "$@")
     eval set -- "$OPTS"
 
     while true; do
@@ -105,7 +105,8 @@ else
             -h | --help ) usage; exit; ;;
             -n | --new ) parse_new_note_argument "$2"; shift 2 ;;
             -t | --title ) parse_title_argument "$2"; shift 2 ;;
-            -s | --subtitle ) parse_subtitle_argument "$2"; shift ;;
+            -s | --subtitle ) parse_subtitle_argument "$2"; shift 2;;
+            --tags ) parse_tags_argument "$2"; shift 2;;
             -l | --list )
                 if [ -z "$2" ]; then
                     exit 1
@@ -118,6 +119,8 @@ else
                 if [ -n "$2" ]; then
                     xdg-open "$2"
                     exit 0
+                else
+                    exit 1
                 fi
                 shift
                 ;;

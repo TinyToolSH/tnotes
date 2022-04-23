@@ -24,14 +24,14 @@ sudo make uninstall
 
 We can do that you by using the options listed bellow:
 
-* `-n`, `--new`, `new` `<path>`: create a new note to the path informed, it creates a folder if it does not exists;
-    *  `-t`, `--title`, `title` `<title>`: add title to note metadata;
-    *  `-s`, `--subtitle`, `subtitle` `<subtitle>`: add subtitle to note metadata;
-    *  `--tags`, `tags` `<tags>` add tags to note metadata;
-* `-l`, `--list`, `list` `<path>`: list notes on a given path;
-* `-o`, `--open`, `open` `<path>`: open note from a given path;
-* `-m`, `--mv`, `mv` `<name>` `<new name>`: rename note file withe the name informed as argument;
-* `-r`, `--rm` `rm` `<name>`: deletes a note with the title received as argument on the path informed with `--path`;
+* `-n`, `--new` `<path>`: create a new note to the path informed, it creates a folder if it does not exists;
+    *  `-t`, `--title` `<title>`: add title to note metadata;
+    *  `-s`, `--subtitle` `<subtitle>`: add subtitle to note metadata;
+    *  `--tags` `<tags>` add tags to note metadata;
+* `-l`, `--list` `<path>`: list notes on a given path;
+* `-o`, `--open` `<path>`: open note from a given path;
+* `-m`, `--mv` `<name>` `<new name>`: rename note file withe the name informed as argument;
+* `-r`, `--rm` `<name>`: deletes a note with the title received as argument on the path informed with `--path`;
 
 ### Examples:
 
