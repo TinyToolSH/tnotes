@@ -13,12 +13,10 @@
 #You should have received a copy of the GNU General Public License
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-note_metadata="title: \"%s\"\nsubtitle: \"%s\"\ndate: \"%s\"\ntags: [%s]\n\n"
 title=""
 subtitle=""
 tags=""
 note=""
-action=""
 
 create_note()
 {
@@ -30,13 +28,14 @@ create_note()
     [ -d "$path" ] || mkdir "$path"
 
     echo "---" > "$path/$note_name_md"
-    printf "$note_metadata" "$title" "$subtitle" "$(date +"%F %H:%M:%S")" "$tags" >> "$path/$note_name_md"
+    printf "title: \"%s\"\nsubtitle: \"%s\"\ndate: \"%s\"\ntags: [%s]\n\n" \
+        "$title" "$subtitle" "$(date +"%F %H:%M:%S")" "$tags" >> "$path/$note_name_md"
     echo "---" >> "$path/$note_name_md"
 
-    if [ ! -z "$title" ]; then
-        echo "\n# $title" >> "$path/$note_name_md"
+    if [ -n "$title" ]; then
+        printf "\n# %s" "$title" >> "$path/$note_name_md"
     else
-        echo "\n# $note_name" >> "$path/$note_name_md"
+        printf "\n# %s" "$note_name" >> "$path/$note_name_md"
     fi
 
     echo "$note_name_md created!"
@@ -60,9 +59,8 @@ usage()
 
 parse_new_note_argument()
 {
-    if [ ! -z "$1" ]; then
+    if [ -n "$1" ]; then
         note="$1"
-        shift;
     else
         echo "\"--new\" option expects an argument."
         exit 1
@@ -71,108 +69,90 @@ parse_new_note_argument()
 
 parse_title_argument()
 {
-    [ ! -z "$1" ] && title="$1";
+    [ -n "$1" ] && title="$1"
 }
 
 parse_subtitle_argument()
 {
-    [ ! -z "$1" ] && subtitle="$1"
+    [ -n "$1" ] && subtitle="$1"
 }
 
 parse_tags_argument()
 {
-    [ ! -z "$1" ] && tags="$1"
+    [ -n "$1" ] && tags="$1"
+}
+
+move()
+{
+    echo "$2 $3"
 }
 
 parse_arguments()
 {
-    # https://stackoverflow.com/a/31443098
-    # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash#13359121
-    while [ "$#" -gt 0 ]; do
+    echo "parse_arguments"
+}
+
+arguments="$*"
+if [ -z "$arguments" ]; then
+    usage
+else
+    progname="$(basename "$0")"
+    OPTS=$(getopt -o "hn:t:s:l:o:m:r:" --long "help,new:,title:,subtitle:,list:,open:,move:,remove:" -n "$progname" -- "$@")
+    eval set -- "$OPTS"
+
+    while true; do
         case "$1" in
-            -n | --new | new )
-                parse_new_note_argument "$2";
-                shift
-                ;;
-            -t=* | --title=* | title=* )
-                parse_title_argument "${1#*=}"
-                shift
-                ;;
-            -s=* | --subtitle=* | subtitle=* )
-                parse_subtitle_argument "${1#*=}"
-                shift
-                ;;
-            --tags=* | tags=* )
-                parse_tags_argument "${1#*=}"
-                shift
-                ;;
-            -t | --title | title )
-                parse_title_argument "$2"
-                shift
-                shift
-                ;;
-            -s | --subtitle | subtitle )
-                parse_subtitle_argument "$2"
-                shift
-                shift
-                ;;
-            --tags | tags )
-                parse_tags_argument "$2"
-                shift
-                shift
-                ;;
-            -l | --list | list)
+            -h | --help ) usage; exit; ;;
+            -n | --new ) parse_new_note_argument "$2"; shift 2 ;;
+            -t | --title ) parse_title_argument "$2"; shift 2 ;;
+            -s | --subtitle ) parse_subtitle_argument "$2"; shift ;;
+            -l | --list )
                 if [ -z "$2" ]; then
-                    exit -1
+                    exit 1
                 fi
                 find "$2" -name "*.md" -o -name "*.txt"
                 exit 0
                 shift
                 ;;
-            -o | --open | open)
-                if [ ! -z "$2" ]; then
+            -o | --open )
+                if [ -n "$2" ]; then
                     xdg-open "$2"
                     exit 0
                 fi
                 shift
                 ;;
-            -r | --rm | rm)
-                if [ ! -z "$2" ]; then
-                    rm "$2"
-                    exit 0
-                fi
-                shift
-                ;;
-            -m | --mv | mv)
-                if [ ! -z "$2" ]; then
+            -m | --move )
+                if [ -n "$2" ] && [ -n "$3" ]; then
                     mv "$2" "$3"
                     exit 0
+                else
+                    exit 1
                 fi
                 shift
                 ;;
-            -h | --help | help)
-                usage;
+            -r | --remove )
+                if [ -n "$2" ]; then
+                    rm "$2"
+                    exit 0
+                else
+                    exit 1
+                fi
                 shift
                 ;;
-            -*)
-                echo "unknown option: $1" >&2;
-                exit 1
-                ;;
-            *)
-                PARAMS="$PARAMS $1";
-                shift
-                ;;
+            -- ) shift; break ;;
+            * ) break ;;
         esac
     done
-}
+fi
 
-arguments="$@"
-[ -z "$arguments" ] && usage || parse_arguments "$@"
 
 if [ -f "${note%.*}.md" ]; then
     echo "\"${note%.*}.md\" already exists!"
     exit 1
-else
+elif [ -n "$note" ]; then
     create_note
     exit 0
+else
+    echo "Unexpected error!"
+    exit 1
 fi
